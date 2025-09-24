@@ -1,1 +1,9 @@
+{
+  "base_folder": "data",
+  "font_bold": "fonts/NotoSans-Bold.ttf",
+  "font_regular": "fonts/NotoSans-Regular.ttf",
+  "font_emoji": "fonts/NotoEmoji-Regular.ttf",
+  "output_pdf": "output/Consolidated_JSON_Data.pdf",
+  "logo_path": "assets/logo.png"
+}
 
