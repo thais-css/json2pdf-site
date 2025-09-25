@@ -1,1 +1,8 @@
-
+{
+  "base_folder" : "data",
+  "font_bold" : "fonts\/NotoSans-Bold.ttf",
+  "font_emoji" : "fonts\/NotoEmoji-Regular.ttf",
+  "font_regular" : "fonts\/NotoSans-Regular.ttf",
+  "logo_path" : "assets\/happn_logo.png",
+  "output_pdf" : "output\/Consolidated_JSON_Data.pdf"
+}
