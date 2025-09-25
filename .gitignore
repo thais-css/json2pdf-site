@@ -209,14 +209,27 @@ __marimo__/
 # macOS
 .DS_Store
 
-# Python
-__pycache__/
-*.pyc
-
-# App
+# Projeto JSON to PDF e site
 output/
 logs/
 *.pdf
 *.zip
+
+# Fonts pesadas, manter fora do repo
 fonts/
+*.ttf
+*.otf
+
+# Uploads temporários e estágios de empacote
+tmp/
+temp/
+**/stage_*/
+**/job_*/
+**/df_*/
+
+# Pasta de dados usada pelos scripts locais
+deleted_files/data/
+
+# Streamlit local
+.streamlit/secrets.toml
 
