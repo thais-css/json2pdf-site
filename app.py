@@ -25,6 +25,10 @@ def extract_upload_to_temp(uploaded_file):
         f.write(uploaded_file.read())
     with zipfile.ZipFile(inzip, "r") as zf:
         zf.extractall(workdir)
+    try:
+        inzip.unlink()
+    except FileNotFoundError:
+        pass
     return workdir
 
 def detect_structured_export(root: Path) -> bool:
