@@ -2,6 +2,7 @@ import os
 import json
 from fpdf import FPDF, XPos, YPos
 import tarfile
+import shutil
 
 def generate_safe_folder_name(name):
     # [Função generate_safe_folder_name - igual ao seu script original]
