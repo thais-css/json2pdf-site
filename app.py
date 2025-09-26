@@ -3,6 +3,7 @@ import os
 import re
 import json
 import zipfile
+import tarfile
 import shutil
 import tempfile
 import subprocess
@@ -20,15 +21,38 @@ SCRIPTS_DIR = DF_SRC / "scripts"
 
 def extract_upload_to_temp(uploaded_file):
     workdir = Path(tempfile.mkdtemp(prefix="job_"))
-    inzip = workdir / "input.zip"
-    with open(inzip, "wb") as f:
+    original_name = (uploaded_file.name or "input").lower()
+    if original_name.endswith(".tar.gz"):
+        temp_name = "input.tar.gz"
+    elif original_name.endswith(".tgz"):
+        temp_name = "input.tgz"
+    else:
+        suffix = Path(original_name).suffix
+        temp_name = f"input{suffix}" if suffix else "input"
+
+    archive_path = workdir / temp_name
+    with open(archive_path, "wb") as f:
         f.write(uploaded_file.read())
-    with zipfile.ZipFile(inzip, "r") as zf:
-        zf.extractall(workdir)
+
     try:
-        inzip.unlink()
-    except FileNotFoundError:
-        pass
+        if original_name.endswith(".zip"):
+            with zipfile.ZipFile(archive_path, "r") as zf:
+                zf.extractall(workdir)
+        elif original_name.endswith((".tar.gz", ".tgz", ".gz")):
+            with tarfile.open(archive_path, mode="r:gz") as tf:
+                tf.extractall(workdir)
+        elif original_name.endswith(".tar"):
+            with tarfile.open(archive_path, mode="r:") as tf:
+                tf.extractall(workdir)
+        else:
+            with zipfile.ZipFile(archive_path, "r") as zf:
+                zf.extractall(workdir)
+    finally:
+        try:
+            archive_path.unlink()
+        except FileNotFoundError:
+            pass
+
     return workdir
 
 def detect_structured_export(root: Path) -> bool:
@@ -229,13 +253,15 @@ def build_stage_for_packaging(merged_pdf: Path, media_dir: Path | None):
 st.set_page_config(page_title="Deleted Files + Processar Dados", page_icon="📦")
 st.title("Processador com detecção automática")
 
-st.write("Envie um .zip. Se tiver index.html, trata como export estruturado e só empacota com senha. Se não tiver, trata como export bruto, roda Deleted Files para gerar PDF e mídia, e depois empacota com senha.")
+st.write(
+    "Envie um arquivo compactado (.zip, .tar, .tar.gz ou .gz). Se tiver index.html, trata como export estruturado e só empacota com senha. Se não tiver, trata como export bruto, roda Deleted Files para gerar PDF e mídia, e depois empacota com senha."
+)
 
-up = st.file_uploader("Envie um .zip", type=["zip"])
+up = st.file_uploader("Envie um arquivo (.zip, .tar, .tar.gz, .gz)", type=["zip", "tar", "gz", "tar.gz"])
 if st.button("Processar"):
 
     if not up:
-        st.error("Selecione um .zip")
+        st.error("Selecione um arquivo compactado")
         st.stop()
 
     with st.spinner("Processando"):
